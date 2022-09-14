@@ -79,7 +79,7 @@ function RegisterPage() {
           process.env.REACT_APP_LOCALHOST_KEY,
           JSON.stringify(data.user)
         );
-        navigate("/");
+        navigate("/login");
       }
     }
   };
@@ -89,7 +89,7 @@ function RegisterPage() {
       <FormContainer>
         <form action="" onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
-            <h1>pringlai</h1>
+            <h1>CHAT APP</h1>
           </div>
           <input
             type="text"
