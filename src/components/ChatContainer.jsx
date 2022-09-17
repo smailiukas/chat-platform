@@ -10,45 +10,39 @@ export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [elapsedTime, setElapsedTime] = useState("");
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
 
 
-  // UPDATING MESSAGE TIME (WIP)
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     updateElapsedTime(elapsedTime);
-  //     console.log(elapsedTime)
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
+  useEffect(() => {
+    async function fetchData() {
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      );
+      setCurrentUserName(data.username);
+      setCurrentUserImage(data.avatarImage);
+    }
 
-  // function updateElapsedTime(time) {
-  //   setElapsedTime(dhm(time));
-  // }
-
-  useEffect(async () => {
-    const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-    );
-    setCurrentUserName(data.username);
-    setCurrentUserImage(data.avatarImage);
+    fetchData()
   }, []);
 
 
-  useEffect(async () => {
-    const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-    );
-    const response = await axios.post(recieveMessageRoute, {
-      from: data.userId,
-      to: currentChat.userId,
-    });
+  useEffect(() => {
+    async function fetchData() {
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      );
+      const response = await axios.post(recieveMessageRoute, {
+        from: data.userId,
+        to: currentChat.userId,
+      });
+  
+      console.log(response)
+      setMessages(response.data);
+    }
 
-    console.log(response)
-    setMessages(response.data);
+    fetchData()
   }, [currentChat]);
 
   useEffect(() => {
@@ -147,12 +141,6 @@ export default function ChatContainer({ currentChat, socket }) {
     <Container>
       <div className="chat-header">
         <div className="user-details">
-          <div className="avatar">
-            <img
-              src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
-              alt=""
-            />
-          </div>
           <div className="username">
             <h3>{currentChat.username}</h3>
           </div>
@@ -168,7 +156,6 @@ export default function ChatContainer({ currentChat, socket }) {
                 }`}
               >
                 <div className="content">
-                {message.fromSelf ? <img className="msg-avatar" src={`data:image/svg+xml;base64,${currentUserImage}`} alt="avatar"/> : <img className="msg-avatar" src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}alt=""/> } {message.fromSelf ? <div className="msg-author-username">{currentUserName}(me) {message.time ? `| ${formatTime(message.time)}` : ""}</div> : <div className="msg-author-username">{currentChat.username} {message.time ? `| ${formatTime(message.time)}` : ""}</div> }
                   <p>{message.message}</p>
                 </div>
                 <div className="tooltip">{dhm(onlySpaces(message.time) ? new Date() : message.time)}</div>
@@ -281,13 +268,14 @@ const Container = styled.div`
     .sended {
       justify-content: flex-start;
       .content {
-        background-color: #32302f;
+        background-color: #de9e69;
+        color: #fff5cf
       }
     }
     .recieved {
       justify-content: flex-start;
       .content {
-        background-color: #32302f;
+        background-color: #473a55;
       }
     }
   }

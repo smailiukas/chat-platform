@@ -56,7 +56,7 @@ function LoginPage() {
           JSON.stringify(data.user)
         );
 
-        navigate("/");
+        navigate("/app");
       }
   }
 };

@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { BiEnvelope, BiUser } from "react-icons/bi";
+import { IoMdSearch } from "react-icons/io";
+import NavBar from "./NavBar";
 
 export default function Contacts({ contacts, changeChat }) {
+
+  const navigate = useNavigate();
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
-  useEffect(async () => {
-    const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-    );
-    setCurrentUserName(data.username);
-    setCurrentUserImage(data.avatarImage);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await JSON.parse(
+        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+      );
+      setCurrentUserName(data.username);
+      setCurrentUserImage(data.avatarImage);
+    }
+
+    fetchData()
   }, []);
 
 
@@ -19,6 +28,7 @@ export default function Contacts({ contacts, changeChat }) {
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
+    navigate(`/app/${contact.userId}`)
   };
 
   
@@ -26,60 +36,46 @@ export default function Contacts({ contacts, changeChat }) {
 
   return (
     <>
-      {currentUserImage && currentUserImage && (
-        <Container>
-          <div className="brand">
-            <div className="contact-above-buttons">
-              <div className="contact-above-button">
-                <div className="icon"><BiUser/></div>
-                <div className="button-text"><h3>Friends</h3></div>
-              </div>
-              <div className="contact-above-button">
-                <div className="icon"><BiEnvelope/></div>
-                <div className="button-text"><h3>Message Requests</h3></div>
-              </div>
-            </div>
-          </div>
-          <div className="brand">
-            <h3>Direct Messages</h3>
-            <br></br>
-          </div>
-          <div className="contacts">
-            {contacts.map((contact, index) => {
-              return (
-                <div
-                  key={contact._id}
-                  className={`contact ${
-                    index === currentSelected ? "selected" : ""
-                  }`}
-                  onClick={() => changeCurrentChat(index, contact)}
-                >
-                  <div className="avatar">
-                    <span class="badge">
-                      {notificationIcon > 9 ? "9+" : notificationIcon}
-                    </span>
-                    <img
-                      src={`data:image/svg+xml;base64,${contact.avatarImage}`}
-                      alt=""
-                    />
-                  </div>
-                  <div className="username">
-                    <h3>{contact.username}</h3>
-                  </div>
+      <Container>
+        <div></div>
+        <div className="brand">
+          <h3>Direct Messages</h3>
+          <br></br>
+        </div>
+        <div className="contact-box">
+          {contacts.map((contact, index) => {
+            return (
+              <div
+                key={contact.userId}
+                className={`contact-child ${
+                  index === currentSelected ? "selected" : ""
+                }`}
+                onClick={() => changeCurrentChat(index, contact)}
+              >
+                <div className="username">
+                  <h3>{contact.username}</h3>
                 </div>
-              );
-            })}
-          </div>
-        </Container>
-      )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="brand">
+          <h3>Groups</h3>
+          <br></br>
+        </div>
+
+        <div className="contact-box"></div>
+        <NavBar/>
+      </Container>
     </>
   );
 }
 const Container = styled.div`
   display: grid;
-  grid-template-rows: 17% 5% 70%;
+  grid-template-rows: 2% 5% 40% 5% 40%;
   overflow: hidden;
-  background-color: #32302f;
+  background-color: #473a55;
 
   .brand {
     font-size: 13px;
@@ -96,111 +92,56 @@ const Container = styled.div`
     }
   }
 
-  .contact-above-buttons {
+  .contact-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: auto;
-    gap: 5px;
-    width: 100%;
-
-    .contact-above-button {
-      background-color: #1f1e1d;
-      min-height: 10px;
-      cursor: pointer;
-      width: 90%;
-      border-radius: 5px;
-      padding: 15px 15px;
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      transition: 0.5s ease-in-out;
-    }
-
-    .icon {
-      border-radius: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: none;
-
-      @media screen and (min-width: 720px) and (max-width: 1080px) {
-        padding: 0.3rem 1rem;
-        svg {
-          font-size: 1rem;
-        }
-      }
-
-      svg {
-        font-size: 2rem;
-        color: white;
-      }
-    }
-
-    .button-text {
-      display: inline-block;
-      font-size: 13px;
-      h3 {
-        color: white;
-      }
-    }
-  }
-
-  .contacts {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: auto;
-    gap: 0.8rem;
+    background-color: #564667;
+    width: 95%;
+    border-radius: 15px;
+    margin-left: 2.5%;
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
-        background-color: #ffffff39;
+        background-color: transparent;
         width: 0.1rem;
         border-radius: 1rem;
       }
     }
-    .contact {
+
+    .contact-child {
+      margin-top: 1.4%;
+      margin-bottom: 2%;
       background-color: #12111134;
       min-height: 5rem;
       cursor: pointer;
-      width: 90%;
+      width: 94%;
       border-radius: 15px;
       padding: 0.4rem;
       display: flex;
-      gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
-      
 
-      .avatar {
-        img {
-          height: 3rem;
-        }
-        position: relative;
-        display: inline-block;
-        text-decoration: none;
-
-        
-        .badge {
-          position: absolute;
-          top: -10px;
-          right: -10px;
-          padding: 5px 5px;
-          border-radius: 25%;
-          background: #ee4934;
-          color: white;
-        }
-      }
       .username {
-        display: inline-block;
         h3 {
           color: white;
         }
       }
+
+      @media screen and (min-width: 720px) and (max-width: 1080px) {
+        gap: 0.5rem;
+        .username {
+          h2 {
+            font-size: 1rem;
+          }
+        }
+      }
+
     }
+
     .selected {
-      background-color: #191818;
+      background-color: #3f334a;
     }
   }
 

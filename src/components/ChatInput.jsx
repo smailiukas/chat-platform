@@ -22,7 +22,6 @@ export default function ChatInput({ handleSendMsg }) {
 
   function validateMsg() {
     if(onlySpaces(msg)) {
-      toast.error("wtf", toastOptions);
       return false
     }
 
@@ -43,7 +42,6 @@ export default function ChatInput({ handleSendMsg }) {
 
   return (
     <Container>
-      {/* <div className="button-container"></div> */}
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
           type="text"
